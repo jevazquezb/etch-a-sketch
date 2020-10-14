@@ -39,6 +39,7 @@ body {
     color: #F0E1B9FF;   
     background-color: transparent;
     font-weight: bold;
+    outline: none;
     /*color: #a80000;
     border: 3px solid #a80000;
     border-radius: 12px;*/
