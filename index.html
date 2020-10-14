@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Etch-a-Sketch</title>
+    <link rel="stylesheet" href="styles/reset.css" type="text/css" media="all">
+    <link rel="stylesheet" href="styles/format.css" type="text/css" media="all">
+</head>
+<body>
+
+    <h1 class="title">Etch-A-Sketch</h1>
+
+    <div class="btncontainer">
+        <div class="stylebtn">
+            <button class="clearbtn">Clear</button>
+        </div>
+        <div class="stylebtn">
+            <button class="resizebtn">Resize</button>
+        </div>
+        <div class="stylebtn">
+            <button class="randombtn">Multi-color</button>
+        </div>
+        <div class="stylebtn">
+            <button class="opacitybtn">Grayscale</button>
+        </div>
+    </div>
+    <br>
+        
+    <div class="container"></div>
+
+    <script>
+
+        let grid = document.querySelector(".container");
+        let gridCells;        
+        let flag = 0;
+        
+        let clearBtn = document.querySelector(".clearbtn");        
+        clearBtn.onclick = (e) => {
+            clearTrail();
+            highlight(e.target.className);
+        };
+
+        let resizeBtn = document.querySelector(".resizebtn");        
+        resizeBtn.onclick = (e) => {
+            resize();
+            highlight(e.target.className);
+        };
+
+        let randomBtn = document.querySelector(".randombtn");        
+        randomBtn.onclick = (e) => {
+            random();
+            highlight(e.target.className);
+        };
+
+        let opacityBtn = document.querySelector(".opacitybtn");        
+        opacityBtn.onclick = (e) => {
+            opacity();
+            highlight(e.target.className);
+        };
+
+        canvas();
+        
+        function highlight(selection) {            
+            switch (true) {
+                case selection == "randombtn":
+                    randomBtn.classList.add("active");
+                    opacityBtn.classList.remove("active");
+                    break;
+                
+                case selection == "opacitybtn":
+                    randomBtn.classList.remove("active");
+                    opacityBtn.classList.add("active");
+                    break;
+                
+                default:
+                    randomBtn.classList.remove("active");
+                    opacityBtn.classList.remove("active");                
+            }
+        }
+
+        
+        function canvas(longSideSquares = 64) {            
+            let shortSide = Math.round(5/8*longSideSquares);
+            let gridSquares = longSideSquares*shortSide;
+            let cell;
+            for (let i = 0; i < gridSquares; i++) {
+                cell = document.createElement("div");                
+                cell.classList.add("cell");
+                grid.appendChild(cell);                       
+            }
+            grid.style.gridTemplateColumns = `repeat(${longSideSquares}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${shortSide}, auto)`;
+
+            gridCells = document.querySelectorAll(".cell");           
+            gridCells.forEach(cells => cells.addEventListener("mouseover", trailColor));            
+        }
+
+        function trailColor(e) {
+            e.target.style.backgroundColor = "black";
+            e.target.style.opacity = "";
+                                   
+        }        
+
+        function clearTrail() {                                              
+            if (flag == 1) {
+                gridCells.forEach(cells => cells.removeEventListener("mouseover", setColors));
+                gridCells.forEach(cells => cells.addEventListener("mouseover", trailColor));                                
+            } else if (flag == 2) {
+                gridCells.forEach( cells => cells.removeEventListener("mouseover", incOpacity));                
+                gridCells.forEach(cells => cells.addEventListener("mouseover", trailColor));                
+            }
+            gridCells.forEach(clear => {
+                clear.style.backgroundColor = "#FCF6F5FF";
+                clear.style.opacity = "";
+            })                                                         
+            flag = 0;                      
+        }
+
+        function resize() {            
+            let n;
+            squares: while (true) {
+                n = prompt("How many squares do you want the long side of the grid to be?",);
+
+                if (n == null) {                                            
+                    break;                   
+                } else if (n.trim() == "") {
+                    alert("You haven't chosen the number of squares.");
+                    continue squares;
+                } else if (isNaN (n) || n <= 0 || !Number.isInteger(+n)) {
+                    alert("You typed an incorrect value, please enter a positive integer number.");
+                    continue squares;
+                }                                   
+                break;
+            }
+            flag = 0;            
+            if (n) {                
+                gridCells.forEach(erase => erase.remove());
+                canvas(n);
+            }              
+        }
+        
+        function random() {            
+            if (flag == 2) {
+                gridCells.forEach(cells => cells.removeEventListener("mouseover", incOpacity));                
+            } else if (flag == 0) {
+                gridCells.forEach(cells => cells.removeEventListener("mouseover", trailColor));
+            }            
+            gridCells.forEach(cells => cells.addEventListener("mouseover", setColors));            
+            flag = 1;                        
+        }
+
+        function setColors(e) {            
+            e.target.style.backgroundColor = randomRGB();
+            e.target.style.opacity = "";                        
+        }      
+
+        function randomRGB() {
+            function intensity() {
+                let x = Math.floor(Math.random()*256);
+                return x;
+            }
+            return `rgb(${intensity()},${intensity()},${intensity()})`;
+        }
+
+        function opacity() {                        
+            if (flag == 1) {
+                gridCells.forEach(cells => cells.removeEventListener("mouseover", setColors));                
+            } else if (flag == 0) {
+                gridCells.forEach(cells => cells.removeEventListener("mouseover", trailColor));
+            }            
+            gridCells.forEach(cells => cells.addEventListener("mouseover", incOpacity));            
+            flag = 2;
+        }
+        
+        function incOpacity(e) {                                   
+            let opacityValue = Number(e.target.style.opacity);
+            opacityValue += 0.1;
+            e.target.style.opacity = opacityValue;
+            e.target.style.backgroundColor = "black";
+        }         
+    </script>
+</body>
+</html>
