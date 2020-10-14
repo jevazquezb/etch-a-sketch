@@ -13,4 +13,4 @@ At the end of this project, the noob will be able to work with the DOM, create g
 
 This task corresponds to the Javascript Basics module of the Odin Project Web development 101. 
 
-From Jesús's creativity (https://github.com/jevazquezb/etch-a-sketch)
+From Jesús's creativity (https://jevazquezb.github.io/etch-a-sketch/)
